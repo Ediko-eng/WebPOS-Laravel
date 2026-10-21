@@ -8,13 +8,16 @@ use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
-    public function showLoginForm()
+    public function showLoginForm(Request $request)
     {
         if (Auth::check()) {
             return redirect()->route('dashboard');
         }
 
-        return view('auth.login');
+        // Optional prefill, e.g. /login?u=ediko
+        $username = trim((string) $request->query('u', ''));
+
+        return view('auth.login', compact('username'));
     }
 
     public function login(Request $request)

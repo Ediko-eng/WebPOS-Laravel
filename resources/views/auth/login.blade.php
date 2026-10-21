@@ -31,7 +31,7 @@
                 @csrf
                 <div class="input-group mb-4">
                     <input type="text" name="username" class="form-control" placeholder="username"
-                           value="{{ old('username') }}" required autofocus>
+                           value="{{ old('username', $username ?? '') }}" required autofocus>
                     <div class="input-group-append">
                         <div class="input-group-text">
                             <span class="fas fa-user"></span>
