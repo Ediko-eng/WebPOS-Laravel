@@ -62,31 +62,32 @@ php artisan serve
 
 Loke `http://127.0.0.1:8000`.
 
-## Akses liu WAMP/Apache (URL loku formatu: `http://webpos.local`)
+## Akses liu WAMP/Apache (URL loku: `http://localhost/WebPOS-Laravel`)
 
-Laravel tenke **document root** apunta ba pasta `public/`. Ita bele konfigura **Virtual Host** iha Apache (WAMP64):
+Sistema bele serve iha **subdirectory** — `http://localhost/WebPOS-Laravel` — **sem** `/public`.
+Ita kria ona:
 
-**1. Kuza ka edita `C:\wamp64\bin\apache\apache2.4.62.1\conf\extra\httpd-vhosts.conf`:**
+| Arquivo | Funsaun |
+|---|---|
+| `index.php` (raiz) | Front controller. Delega ba `public/index.php` |
+| `.htaccess` (raiz) | Blokeia asesu kodigu fonte, serve asseti husi `public/`, manda ba `index.php` |
+
+Kualidade URL sira **husi host ne'ebé ita uza** — se ita loke
+`http://192.168.1.32/WebPOS-Laravel`, link hotu-hare sei husi IP ne'e. Hodi
+iha **dispositivu seluk** iha rede loja, buka husi IP komputador POS.
+Reserva IP iha router atu IP la muda.
+
+### 1. Konfigurasaun Apache (WAMP64)
+
+Document root ba `localhost` tenke ser `${INSTALL_DIR}/www` (default husi WAMP),
+ita bele edita `C:\wamp64\bin\apache\apache2.4.62.1\conf\extra\httpd-vhosts.conf`:
 
 ```apache
-# Virtual Hosts
-#
 <VirtualHost *:80>
   ServerName localhost
   ServerAlias localhost
   DocumentRoot "${INSTALL_DIR}/www"
   <Directory "${INSTALL_DIR}/www/">
-    Options +Indexes +Includes +FollowSymLinks +MultiViews
-    AllowOverride All
-    Require local
-  </Directory>
-</VirtualHost>
-
-<VirtualHost *:80>
-  ServerName webpos.local
-  ServerAlias www.webpos.local
-  DocumentRoot "C:/wamp64/www/WebPOS-Laravel/public"
-  <Directory "C:/wamp64/www/WebPOS-Laravel/public">
     Options +Indexes +Includes +FollowSymLinks +MultiViews
     AllowOverride All
     Require local
@@ -99,25 +100,64 @@ Laravel tenke **document root** apunta ba pasta `public/`. Ita bele konfigura **
 > `Format-Hex C:\wamp64\bin\apache\apache2.4.62.1\conf\extra\httpd-vhosts.conf | Select-Object -First 1`
 > — se bytes primeiru `EF BB BF`, iha BOM, tenke hamoos.
 
-**2. Hakama iha Windows hosts file** (`C:\Windows\System32\drivers\etc\hosts`, iha hakarak admin):
+**2. Restart Apache** (WAMP tray → Restart All Services, ka `Restart-Service wampapache64`).
+
+**3. Konfigura `APP_URL` iha `.env`:**
 
 ```
-127.0.0.1 webpos.local www.webpos.local
+APP_URL=http://localhost/WebPOS-Laravel
 ```
 
-**3. Restart Apache** (WAMP tray → Restart All Services, ka `Restart-Service wampapache64`).
+Loke `http://localhost/WebPOS-Laravel` — URL limpo, sem `/public`.
 
-**4. Konfigura `APP_URL` iha `.env`:**
+### Seguridade (`.htaccess`)
 
+`.htaccess` iha raiz **blokeia** asesu ba:
+
+- `.env` (password baze de dados), `composer.json`, `composer.lock`, `AGENTS.md`, `package.json`
+- direktóriu `app/`, `bootstrap/`, `config/`, `database/`, `lang/`, `resources/`, `routes/`, `storage/`, `tests/`, `vendor/`, `.git/`
+
+Konkretiza: `http://<IP>/WebPOS-Laravel/.env` → **403**.
+
+### Baze de dados: blokeia asesu husi rede
+
+`my.ini` (`C:\wamp64\bin\mysql\mysql9.1.0\my.ini`) tenke iha:
+
+```ini
+[mysqld]
+bind-address=127.0.0.1
 ```
-APP_URL=http://webpos.local
+
+Database seiacessu **deit husi komputador ida**. Firewall rule ba `mysqld` mosi tenke
+desativadu. Aplikasaun kontinua funsiona tanba iha koneksaun loopback.
+
+## Backup baze de dados (automatiku)
+
+| Arquivo | Funsaun |
+|---|---|
+| `backup-db.ps1` | Kria dump `.sql` iha `C:\wamp64\backups\db\`, rotasaun 30 dias |
+| `backup-loop.ps1` | Loop: roda backup kada 24 horas |
+| `C:\wamp64\backups\my.cnf` | Kredensial MySQL (password la mosu iha command line) |
+| `C:\wamp64\backups\backup.log` | Log |
+
+Backup iha tua boot Windows:
+`%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\WebPOS Backup Loop.vbs`
+
+> **Nota:** Windows Task Scheduler iha komputador ida ne'e **laika** task (ihin
+> "Queued"). Hodi nune'e, backup iha direitu ona iha Start-up folder, no
+> `backup-loop.ps1` iha kontrolu bug running duple.
+
+**Restaura dadus:**
+
+```powershell
+& "C:\wamp64\bin\mysql\mysql9.1.0\bin\mysql.exe" -u root -p -h 127.0.0.1 -P 3306 db_codinglinepos < "C:\wamp64\backups\db\pos_2026-10-22_0900.sql"
 ```
 
-Loke `http://webpos.local` — URL limpo, sem `/public`.
+**Roda backup manual:**
 
-> **Nota:** Laravel labele funsiona iha subdirectory (`/WebPOS-Laravel/...`) tanpa
-> Virtual Host, tanba Symfony labele detekta base path. Uza `webpos.local` ka
-> `http://localhost/WebPOS-Laravel/public`.
+```powershell
+powershell -ExecutionPolicy Bypass -File C:\wamp64\www\WebPOS-Laravel\backup-db.ps1
+```
 
 ## Estrutura Baze de Dados
 

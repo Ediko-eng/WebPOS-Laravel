@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="{{ asset('asset/AdminLTE-3.2.0/plugins/fontawesome-free/css/all.min.css') }}">
     <link rel="stylesheet" href="{{ asset('asset/AdminLTE-3.2.0/plugins/icheck-bootstrap/icheck-bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('asset/AdminLTE-3.2.0/dist/css/adminlte.min.css') }}">
-    <link rel="shortcut icon" href="{{ asset('asset/image/isa.png') }}" type="image/png">
+    <link rel="shortcut icon" href="{{ asset('asset/image/isa.jpg') }}" type="image/jpg">
 </head>
 <body class="hold-transition login-page" id="bg-login">
 <div class="login-box slide-down" style="margin-top: -70px;">
