@@ -62,6 +62,63 @@ php artisan serve
 
 Loke `http://127.0.0.1:8000`.
 
+## Akses liu WAMP/Apache (URL loku formatu: `http://webpos.local`)
+
+Laravel tenke **document root** apunta ba pasta `public/`. Ita bele konfigura **Virtual Host** iha Apache (WAMP64):
+
+**1. Kuza ka edita `C:\wamp64\bin\apache\apache2.4.62.1\conf\extra\httpd-vhosts.conf`:**
+
+```apache
+# Virtual Hosts
+#
+<VirtualHost *:80>
+  ServerName localhost
+  ServerAlias localhost
+  DocumentRoot "${INSTALL_DIR}/www"
+  <Directory "${INSTALL_DIR}/www/">
+    Options +Indexes +Includes +FollowSymLinks +MultiViews
+    AllowOverride All
+    Require local
+  </Directory>
+</VirtualHost>
+
+<VirtualHost *:80>
+  ServerName webpos.local
+  ServerAlias www.webpos.local
+  DocumentRoot "C:/wamp64/www/WebPOS-Laravel/public"
+  <Directory "C:/wamp64/www/WebPOS-Laravel/public">
+    Options +Indexes +Includes +FollowSymLinks +MultiViews
+    AllowOverride All
+    Require local
+  </Directory>
+</VirtualHost>
+```
+
+> ⚠️ Salva arkivu **sem BOM** (UTF-8 *without* BOM). Se arkivu iha BOM, Apache parse fail
+> no ita hatudu **403** iha hotu-hotu website localhost. Konferi ho:
+> `Format-Hex C:\wamp64\bin\apache\apache2.4.62.1\conf\extra\httpd-vhosts.conf | Select-Object -First 1`
+> — se bytes primeiru `EF BB BF`, iha BOM, tenke hamoos.
+
+**2. Hakama iha Windows hosts file** (`C:\Windows\System32\drivers\etc\hosts`, iha hakarak admin):
+
+```
+127.0.0.1 webpos.local www.webpos.local
+```
+
+**3. Restart Apache** (WAMP tray → Restart All Services, ka `Restart-Service wampapache64`).
+
+**4. Konfigura `APP_URL` iha `.env`:**
+
+```
+APP_URL=http://webpos.local
+```
+
+Loke `http://webpos.local` — URL limpo, sem `/public`.
+
+> **Nota:** Laravel labele funsiona iha subdirectory (`/WebPOS-Laravel/...`) tanpa
+> Virtual Host, tanba Symfony labele detekta base path. Uza `webpos.local` ka
+> `http://localhost/WebPOS-Laravel/public`.
+
 ## Estrutura Baze de Dados
 
 Sistema ida ne'e uza baze de dados ne'ebé eziste ona (la uza migration):
