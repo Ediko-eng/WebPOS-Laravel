@@ -74,6 +74,10 @@ class UserController extends Controller
             'level' => 'required|integer|in:1,2,3',
             'address' => 'nullable|string|max:100',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:3072',
+            'newPassword' => 'nullable|string|min:4',
+            'newPassword2' => 'nullable|same:newPassword',
+        ], [
+            'newPassword2.same' => 'Konfirmasaun password foun la hanesan.',
         ]);
 
         $cekUsername = User::where('username', strtolower($validated['username']))
@@ -103,6 +107,13 @@ class UserController extends Controller
             'level' => $validated['level'],
             'foto' => $foto,
         ]);
+
+        // Password reset by an administrator (optional)
+        if (! empty($validated['newPassword'])) {
+            $user->update([
+                'password' => Hash::make($validated['newPassword']),
+            ]);
+        }
 
         return redirect()->route('user.index')->with('success', 'Dadus utilizador hadia ho susesu');
     }

@@ -72,6 +72,21 @@
                         </div>
                         @endunless
 
+                        @if (isset($user))
+                        <div class="form-group">
+                            <label for="newPassword">Password Foun</label>
+                            <input type="password" name="newPassword" id="newPassword" class="form-control"
+                                   autocomplete="new-password">
+                            <span class="text-sm">Hakarak troka password, hakama password foun iha ne'e. Husi ita troka,
+                                password atual sei manas.</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="newPassword2">Konfirma Password Foun</label>
+                            <input type="password" name="newPassword2" id="newPassword2" class="form-control"
+                                   autocomplete="new-password">
+                        </div>
+                        @endif
+
                         <div class="form-group">
                             <label for="level">Level Utilizador *</label>
                             <select name="level" id="level" class="form-control" required>
