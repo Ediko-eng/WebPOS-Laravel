@@ -62,6 +62,38 @@ php artisan serve
 
 Loke `http://127.0.0.1:8000`.
 
+## Toku Sesaun iha browser ida deit (multi-session)
+
+Buka `http://localhost/WebPOS-Laravel` — pagina launcher sei hatudu **toku karta sesaun**.
+Klik **"Loke Toku Sesaun"** (ka kada karta) sei loke toku jwindow, ita bele tama
+iha sesaun diferente iha kada jwindow, iha **browser ida deit**.
+
+| Slot | URL | Uza-na'in | Nível |
+|------|-----|-----------|-------|
+| 1 | `/WebPOS-Laravel/s1/...` | `ediko` | Administrator |
+| 2 | `/WebPOS-Laravel/s2/...` | `riana` | Supervisor |
+| 3 | `/WebPOS-Laravel/s3/...` | `fabio` | Operator |
+
+### Bainhira nune'e iha buat iha browser ida deit?
+
+Browser ida deit Normally iha hakarek **cookie ida deit** ba sesaun — hodi
+login foun, sesaun anterior sei substituidu. Ita bele resolve problema ida ne'e
+ho **"slot"**: kada slot iha nia **path** (`/s1`, `/s2`, `/s3`) no iha nia
+**naran cookie** propriu, hodi browser iha hakarek cookie ida-ida ba kada slot.
+
+| Arquivo | Funsaun |
+|---|---|
+| `app/Http/Middleware/SessionSlot.php` | Detekta slot, define naran + path cookie, ajusta base URL |
+| `resources/views/launcher.blade.php` | Pagina launcher (toku karta sesaun) |
+
+> **Nota:** Middleware ida ne'e tenke iha **global middleware** (la iha grupu
+> `web`), tanba grupu `web` sei execute **depis** router matek rota — se
+> middleware iha grupu `web`, path info bele keta mosu iha laran.
+
+Rota sira hotu-hotu funsiona hanesan: link sira hotu-hotu sei kontinue iha
+slot (`/WebPOS-Laravel/s2/dashboard`), no asesu ba asesu sira sensibel
+(`/.env`, `/vendor/`, ...) sei blokea iha slot sira mos.
+
 ## Akses liu WAMP/Apache (URL loku: `http://localhost/WebPOS-Laravel`)
 
 Sistema bele serve iha **subdirectory** — `http://localhost/WebPOS-Laravel` — **sem** `/public`.

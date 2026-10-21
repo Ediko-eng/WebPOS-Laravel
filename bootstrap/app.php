@@ -16,6 +16,11 @@ return Application::configure(basePath: dirname(__DIR__))
             'auth.check' => \App\Http\Middleware\CheckAuth::class,
             'role' => \App\Http\Middleware\CheckRole::class,
         ]);
+
+        // Must run before the router matches a route, so the slot prefix can
+        // be stripped from the path, and before the session starts so each
+        // slot gets its own session cookie name and path.
+        $middleware->prepend(\App\Http\Middleware\SessionSlot::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

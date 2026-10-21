@@ -5,6 +5,9 @@
     # 1) Block source code and configuration directories
     RewriteRule ^(?:app|bootstrap|config|database|lang|resources|routes|storage|tests|vendor|\.git|\.qodo)(?:/|$) - [F,L]
 
+    # 1b) Block dot files (.env, .git, ...) in every path, including slots
+    RewriteRule (?:^|/)\.(?!well-known) - [F,L]
+
     # 2) Block real files sitting in the project root (.env, composer.json,
     #    AGENTS.md, ...). Only index.php may be reached here.
     RewriteCond %{REQUEST_URI} !^/WebPOS-Laravel/public/
@@ -12,10 +15,13 @@
     RewriteCond %{REQUEST_FILENAME} !index\.php$
     RewriteRule ^ - [F,L]
 
-    # 3) Serve static files that live in public/ (assets, uploads, favicon, robots.txt)
+    # 3) Session slots (/s1, /s2, /s3): static files live in public/
+    RewriteRule ^s([1-9][0-9]*)/(.+\.(?:css|js|mjs|png|jpe?g|gif|svg|ico|webp|bmp|woff2?|ttf|eot|txt|csv|pdf|map))$ public/$2 [L]
+
+    # 4) Serve static files that live in public/ (assets, uploads, favicon, robots.txt)
     RewriteRule ^(.+\.(?:css|js|mjs|png|jpe?g|gif|svg|ico|webp|bmp|woff2?|ttf|eot|txt|csv|pdf|map))$ public/$1 [L]
 
-    # 4) Everything else goes to the Laravel front controller
+    # 5) Everything else goes to the Laravel front controller
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^(.*)$ index.php [L]
 </IfModule>
