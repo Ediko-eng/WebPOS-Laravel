@@ -2,7 +2,7 @@
 
 Sistema Informasaun Ponto de Venda (POS) ba loja — versaun Laravel husi sistema WebPOS tuan (PHP procedural).
 
-Aplikasaun ida ne'e uza **Laravel 13**, **AdminLTE 3.2.0**, no konekta ba **baze de dados MySQL/MariaDB** ne'ebé iha ona (tabela `tbl_*`).
+Aplikasaun ida ne'e uza **Laravel 13**, **AdminLTE 3.2.0**, no konekta ba **baze de dados MySQL** (porta padraun `3306`).
 
 ## Kona-ba Sistema
 
@@ -27,7 +27,7 @@ Sistema POS simples ne'ebé uza iha Timor-Leste, ho interfeis no notifikasaun ho
 ## Teknolojia
 - Laravel 13 / PHP 8.4
 - AdminLTE 3.2.0 (Bootstrap 4)
-- MySQL / MariaDB
+- MySQL 8+ / 9.x
 - `picqer/php-barcode-generator` (barcode)
 - `setasign/fpdf` (relatoriu PDF)
 
@@ -45,16 +45,16 @@ composer install
 copy .env.example .env
 php artisan key:generate
 
-# 4. Konfigura .env (baze de dados)
+# 4. Konfigura .env (baze de dados MySQL)
 #    DB_CONNECTION=mysql
 #    DB_HOST=127.0.0.1
-#    DB_PORT=3307
+#    DB_PORT=3306
 #    DB_DATABASE=db_codinglinepos
 #    DB_USERNAME=root
 #    DB_PASSWORD=
 
 # 5. Importa baze de dados (tabela tbl_* presiza eziste ona)
-#    Importa db_codinglinepos.sql ba MariaDB
+#    Importa db_codinglinepos.sql ba MySQL
 
 # 6. Hahu server
 php artisan serve
